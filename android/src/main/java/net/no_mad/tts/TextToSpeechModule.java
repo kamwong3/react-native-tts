@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import java.io.File;
+import android.util.Log;
+import android.os.Environment;
+
 public class TextToSpeechModule extends ReactContextBaseJavaModule {
 
     private TextToSpeech tts;
@@ -490,7 +494,13 @@ public class TextToSpeechModule extends ReactContextBaseJavaModule {
             params.putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, audioStreamType);
             params.putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, volume);
             params.putFloat(TextToSpeech.Engine.KEY_PARAM_PAN, pan);
-            return tts.speak(utterance, TextToSpeech.QUEUE_ADD, params, utteranceId);
+            // return tts.speak(utterance, TextToSpeech.QUEUE_ADD, params, utteranceId);
+            // -------------------------------------------------------
+            // KAM: ad hoc change the speak() to synthesizeToFile()
+            // -------------------------------------------------------
+            String out_filename = getUttFilename(utteranceId);
+            Log.e("KAM", out_filename);
+            return tts.synthesizeToFile(utterance, null, new File(out_filename), utteranceId);
         } else {
             HashMap<String, String> params = new HashMap();
             params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId);
@@ -508,4 +518,14 @@ public class TextToSpeechModule extends ReactContextBaseJavaModule {
                 .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                 .emit(eventName, params);
     }
+    
+    // -------------------------------------------------------
+    // KAM: return a external readable path
+    // -------------------------------------------------------
+    private String getUttFilename(String utteranceId) {
+        File file = new File("/sdcard/", "FSD");
+        if (!file.exists()) { file.mkdirs(); }
+        return (file.getAbsolutePath() + "/tts-" + utteranceId + ".wav");
+    }
+    
 }
