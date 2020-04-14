@@ -523,7 +523,7 @@ public class TextToSpeechModule extends ReactContextBaseJavaModule {
     // KAM: return a external readable path
     // -------------------------------------------------------
     private String getUttFilename(String utteranceId) {
-        File file = new File("/sdcard/", "FSD");
+        File file = new File("/sdcard/", "TTSOutput");
         if (!file.exists()) { file.mkdirs(); }
         return (file.getAbsolutePath() + "/tts-" + utteranceId + ".wav");
     }
